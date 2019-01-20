@@ -3,16 +3,94 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>pmk</title>
-  <meta name="description" content="todo">
-  <meta name="author" content="Pawel Kacprzyk">
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css?v=1.1">
+  <title>pmk</title>
 </head>
 
 <body>
-  <h2>Witaj!</h2>
+  <h2>Hi!</h2>
+  <div class="form-group">
+    <label for="seq">Sequence:</label>
+    <textarea class="form-control text-monospace" rows="5" id="seq" placeholder="e.g. gtttcaaactgtccaggtctaatggtgtgaagcgatactgtttgatgcctggttggtgca
+actggcggcaaaacggcttaaagctccagatgccacattagtgaggacctggtgtattac
+gttggattaccctgtgacagctcaggcacacaccaggattaggaaattagcatcgtaaga
+ctagtccgtacaaacaaaaacaaaaaatagaagtttcaagtggttcccgttgttggagcg
+cgtaagggatacgtaataataggtcaggtcagaaagaagcggcttggagccccatttata
+tctttaacatcgggagaatcatccgtcgaccttgtggcacggtttgccggcgcgaatagg
+gtggacgtagatattagacggagacggttgaagcttacctcgtagctgggaactctatgg
+agtggctaccctatggacttcctccggcagcgcaggtttcaaaatgagcaatcagcaatt
+cctaggatgaagccgcgagctaaaaacttcagcgcttccgcatgcgttactgtcctggag
+agttttaatcgggtgtctgtcacacacctcggatctcgcccactgcgtgagccttagata
+cgcagtgatgcaatggatgtaggtctctagcgaagccaagtctagtcgcgcctccgcgcg
+caagtctgcgataatgggcaagtgcctgcagtctaagtataactcgtcgccagatgcggc
+ataggattatgagcgtttcccctgcgcgttatggtacccggaccgggcccgcgacacacg
+gtgcacaggtagagctagttaggcgtaacgacgccagaattatgtttattatttacctgt
+gacgcaagctaacagtagtgccccggggtgctagtaagtaagcagagaactgggatgtag
+ccgtcaaaggtcttttgccgagatgactactacaaccgtatagacaaagcgtgcacatta
+catggggagtacctacttccagaacctgtgtcttcctagt"></textarea>
+  </div>
+  <button id="split" type="button" class="btn btn-primary" onclick="split()" data-toggle="tooltip" data-placement="right" title="Removes all whitespaces and splits sequence into triads">Split</button>
+  <div class="form-group">
+    <label for="seqOut">Formatted sequence:</label>
+    <textarea class="form-control text-monospace" rows="5" id="seqOut"></textarea>
+    <button id="copyBtn" class="btn btn-default" onclick="copyToClipboard('seqOut')" data-toggle="tooltip" data-placement="right" title="Copy to clipboard"><i class="fas fa-copy"></i></button>
+  </div>
+
   <script>
+    var example = `gtttcaaactgtccaggtctaatggtgtgaagcgatactgtttgatgcctggttggtgca
+  actggcggcaaaacggcttaaagctccagatgccacattagtgaggacctggtgtattac
+  gttggattaccctgtgacagctcaggcacacaccaggattaggaaattagcatcgtaaga
+  ctagtccgtacaaacaaaaacaaaaaatagaagtttcaagtggttcccgttgttggagcg
+  cgtaagggatacgtaataataggtcaggtcagaaagaagcggcttggagccccatttata
+  tctttaacatcgggagaatcatccgtcgaccttgtggcacggtttgccggcgcgaatagg
+  gtggacgtagatattagacggagacggttgaagcttacctcgtagctgggaactctatgg
+  agtggctaccctatggacttcctccggcagcgcaggtttcaaaatgagcaatcagcaatt
+  cctaggatgaagccgcgagctaaaaacttcagcgcttccgcatgcgttactgtcctggag
+  agttttaatcgggtgtctgtcacacacctcggatctcgcccactgcgtgagccttagata
+  cgcagtgatgcaatggatgtaggtctctagcgaagccaagtctagtcgcgcctccgcgcg
+  caagtctgcgataatgggcaagtgcctgcagtctaagtataactcgtcgccagatgcggc
+  ataggattatgagcgtttcccctgcgcgttatggtacccggaccgggcccgcgacacacg
+  gtgcacaggtagagctagttaggcgtaacgacgccagaattatgtttattatttacctgt
+  gacgcaagctaacagtagtgccccggggtgctagtaagtaagcagagaactgggatgtag
+  ccgtcaaaggtcttttgccgagatgactactacaaccgtatagacaaagcgtgcacatta
+  catggggagtacctacttccagaacctgtgtcttcctagt`;
+    function split() {
+      var input = "";
+      var ta = document.getElementById("seq");
+      if(ta.value === "") {
+        input = example;
+      } else {
+        input = ta.value;
+      }
+      input = input.replace(/\s/g,'');
+      var output = "";
+    	var i;
+    	for (i = 0; i < input.length; i+=3) {
+    	  output += input.substring(i,i+3) + " ";
+    	}
+    	output = output.trim();
+      var taOut = document.getElementById("seqOut");
+      taOut.value = output;
+    }
+
+    function copyToClipboard(target){
+      var ta = document.getElementById(target);
+      ta.select();
+      document.execCommand("copy");
+    }
   </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
+
 </body>
 </html>
